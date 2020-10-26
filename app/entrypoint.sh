@@ -11,7 +11,4 @@ then
   echo "PosgreSQL started"
 fi
 
-#pyhon hello_django/manage.py flush --no-input
-#python hello_django/manage.py migrate
-
 exec "$@"
