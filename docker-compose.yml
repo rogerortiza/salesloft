@@ -11,7 +11,7 @@ services:
     env_file:
       - ./.env
     environment:
-      API_SALESLOFT: "${API_SALESLOFT}"
+      APIKEY_SALESLOFT: "${APIKEY_SALESLOFT}"
     depends_on:
       - db
 

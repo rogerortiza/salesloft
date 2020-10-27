@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'people.apps.PeopleConfig',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -123,3 +125,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# SALESLOFT
+APIKEY_SALESLOFT = os.environ.get('APIKEY_SALESLOFT')
+API_URL_SALESLOFT = 'https://api.salesloft.com/v2/people'
+API_TOKEN_SALESLOFT = 'Bearer ' + APIKEY_SALESLOFT
