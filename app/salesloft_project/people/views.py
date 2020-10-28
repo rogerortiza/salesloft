@@ -3,14 +3,26 @@ import requests
 from .serializers import PeopleSerializer
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 from salesloft_project.settings import API_TOKEN_SALESLOFT,\
     API_URL_SALESLOFT
 
 
 class PeopleViewSet(viewsets.ViewSet):
     """  A simple ViewSet for listing SalesLoft people """
+    authentication_classes = [ BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     lookup_field = 'email_addresses'
     lookup_value_regex = '[^/]+'
+
+    def _get_query(self, params=''):
+        headers = {
+            'Authorization': API_TOKEN_SALESLOFT,
+            'Accept': 'application/json',
+        }
+        url = API_URL_SALESLOFT+'/?'+params
+        return requests.get(url, headers=headers)
 
     def list(self, request):
         """
@@ -18,11 +30,7 @@ class PeopleViewSet(viewsets.ViewSet):
         :param request: context of the request browser
         :return:
         """
-        headers = {
-            'Authorization': API_TOKEN_SALESLOFT,
-            'Accept': 'application/json',
-        }
-        response = requests.get(url=API_URL_SALESLOFT, headers=headers)
+        response = self._get_query()
         data = response.json()
 
         if data:
@@ -43,11 +51,7 @@ class PeopleViewSet(viewsets.ViewSet):
         :param email_addresses: lookup_field for query
         :return:
         """
-        headers = {
-            'Authorization': API_TOKEN_SALESLOFT,
-            'Accept': 'application/json',
-        }
-        response = requests.get(url=API_URL_SALESLOFT+'/?'+email_addresses, headers=headers)
+        response = self._get_query(params=email_addresses)
         data = response.json()
 
         if data:
@@ -88,11 +92,7 @@ class PeopleCountUniqueCharViewSet(PeopleViewSet):
         :param request:
         :return:
         """
-        headers = {
-            'Authorization': API_TOKEN_SALESLOFT,
-            'Accept': 'application/json',
-        }
-        response = requests.get(url=API_URL_SALESLOFT, headers=headers)
+        response = self._get_query()
         data = response.json()
 
         if data:
@@ -103,6 +103,7 @@ class PeopleCountUniqueCharViewSet(PeopleViewSet):
 
             serializer = PeopleSerializer(people, many=True)
             result = {}
+
             for person in serializer.data:
                 if person['email_address']:
                     result[person['email_address']] = self._unique_character(person['email_address'])
@@ -117,14 +118,10 @@ class PeopleCountUniqueCharViewSet(PeopleViewSet):
         """
           Get one o more people from SalesLoft with dict
         :param request:
+        :param email_addresses:
         :return:
         """
-
-        headers = {
-            'Authorization': API_TOKEN_SALESLOFT,
-            'Accept': 'application/json',
-        }
-        response = requests.get(url=API_URL_SALESLOFT+'/?'+email_addresses, headers=headers)
+        response = self._get_query(params=email_addresses)
         data = response.json()
 
         if data:

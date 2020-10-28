@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'people.apps.PeopleConfig',
+    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
 ]
@@ -45,11 +46,16 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:4201',
 ]
 
 ROOT_URLCONF = 'salesloft_project.urls'
@@ -130,3 +136,11 @@ STATIC_URL = '/static/'
 APIKEY_SALESLOFT = os.environ.get('APIKEY_SALESLOFT')
 API_URL_SALESLOFT = 'https://api.salesloft.com/v2/people'
 API_TOKEN_SALESLOFT = 'Bearer ' + APIKEY_SALESLOFT
+
+# DJANGO REST FRAMEWORK
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
