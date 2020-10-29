@@ -3,7 +3,9 @@ version: '3.7'
 services:
   web:
     build: ./app
-    command: python salesloft_project/manage.py runserver 0.0.0.0:8000
+    command: sh -c "python salesloft_project/manage.py migrate &&
+                                python salesloft_project/manage.py loaddata */fixtures/*.json  &&
+                                python salesloft_project/manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./app/:/usr/src/app/
     ports:
@@ -19,6 +21,7 @@ services:
     build: ./frontend
     volumes:
       - ./frontend/:/app
+      - /app/node_modules
     ports:
       - 4201:4200
 
