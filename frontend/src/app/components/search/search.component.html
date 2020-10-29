@@ -1,0 +1,51 @@
+
+<div class="container">
+  <nav class="navbar-light bg-light pt-3 pb-2">
+  <div class="form-inline">
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon1">@</span>
+      </div>
+      <input type="text" class="form-control" placeholder="email"
+             aria-label="Email" aria-describedby="basic-addon1"
+             (keyup.enter)="searchPeopleByEmail(searchEmail.value)"
+             #searchEmail
+      >
+    </div>
+  </div>
+</nav>
+</div>
+
+<div class="container-fluid">
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Email</th>
+        <th scope="col">Unique Character Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let person of peopleUniqueCharacter; let i = index">
+        <th scope="row">{{ i+1 }}</th>
+        <td>{{ person.email_address }}</td>
+        <td>
+          <table class="table table-sm table-primary">
+            <thead>
+              <tr>
+                <th class="text-center" scope="col">Character</th>
+                <th class="text-center" scope="col">Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let char of person.unique_character | keyvalue:keepOriginalOrder">
+                <td class="text-center">{{char.key}}</td>
+                <td class="text-center">{{char.value}}</td>
+              </tr>
+          </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

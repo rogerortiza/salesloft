@@ -15,12 +15,12 @@ services:
     depends_on:
       - db
 
-  #frontend:
-  # build: ./frontend
-  #  volumes:
-  #   - ./frontend/:/app
-  #  ports:
-  #   - 4201:4200
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend/:/app
+    ports:
+      - 4201:4200
 
   db:
     image: postgres:12.0-alpine
