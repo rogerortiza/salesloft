@@ -12,7 +12,7 @@ ands:
 YOUR_APIKEY should be a valid APIKEY Salesloft
 
 If you have any questions or concerns, do not hesitate to contact me:
-<rogerortiz4@gmailcom>
+<rogerortiz4@gmail.com>
 
 
 Enjoy!
