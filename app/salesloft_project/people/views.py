@@ -12,7 +12,7 @@ from salesloft_project.settings import API_TOKEN_SALESLOFT,\
 class BasicPeopleViewSet(viewsets.ViewSet):
     """  Basic ViewSet SalesLoft people """
     permission_classes = [IsAuthenticated]
-    lookup_field = 'email_addresses'
+    lookup_field = 'params'
     lookup_value_regex = '[^/]+'
 
     def _unique_character(self, email):
@@ -34,7 +34,7 @@ class BasicPeopleViewSet(viewsets.ViewSet):
                                   key=operator.itemgetter(1),
                                   reverse=True))
 
-    def _get_query(self, params=''):
+    def _get_query(self, params=None):
         """
         Private method to perform queries in SalesLoft API
         :param params: value to filter the data
@@ -44,7 +44,15 @@ class BasicPeopleViewSet(viewsets.ViewSet):
             'Authorization': API_TOKEN_SALESLOFT,
             'Accept': 'application/json',
         }
-        url = API_URL_SALESLOFT + '/?' + params
+        url = API_URL_SALESLOFT
+
+        if params:
+            params = params.split('params=')[1]
+            params = params.strip('{}')
+            params = params.replace(',', '&')
+
+            url += '/?' + params
+
         return requests.get(url, headers=headers)
 
     def _send_response(self, response=None, unique_character=False):
@@ -57,18 +65,20 @@ class BasicPeopleViewSet(viewsets.ViewSet):
         :return:  a response from SalesLoft Project
         """
         if response.status_code == status.HTTP_200_OK:
-            data = response.json()
+            resp = response.json()
+
             try:
-                people = data['data']
+                data = resp['data']
+                metadata = resp['metadata']
             except KeyError:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
-            serializer = PeopleSerializer(people, many=True)
-            response = serializer.data
+            serializer = PeopleSerializer(data, many=True)
+            people = serializer.data
 
             if unique_character:
                 result = []
-                for person in serializer.data:
+                for person in people:
                     res = {}
                     if person['email_address']:
                         res['display_name'] = person['display_name']
@@ -80,7 +90,9 @@ class BasicPeopleViewSet(viewsets.ViewSet):
                         res['display_name'] = 'Not email found'
                     result.append(res)
 
-                response = result
+                people = result
+
+            response = {'metadata': metadata, 'data': people}
 
             return Response(response, status.HTTP_200_OK)
         else:
@@ -99,14 +111,14 @@ class PeopleViewSet(BasicPeopleViewSet):
         response = self._get_query()
         return self._send_response(response)
 
-    def retrieve(self, request, email_addresses):
+    def retrieve(self, request, params):
         """
         Get one o more people from SalesLoft
         :param request: context of the request browser
-        :param email_addresses: lookup_field for query
+        :param params: lookup_field for query
         :return:
         """
-        response = self._get_query(params=email_addresses)
+        response = self._get_query(params)
         return self._send_response(response)
 
 
@@ -125,12 +137,12 @@ class PeopleCountUniqueCharViewSet(BasicPeopleViewSet):
         response = self._get_query()
         return self._send_response(response, unique_character=True)
 
-    def retrieve(self, request, email_addresses):
+    def retrieve(self, request, params):
         """
           Get one o more people from SalesLoft with dict
         :param request:
         :param email_addresses:
         :return:
         """
-        response = self._get_query(params=email_addresses)
+        response = self._get_query(params)
         return self._send_response(response, unique_character=True)
