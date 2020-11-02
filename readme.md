@@ -11,6 +11,8 @@ ands:
 
 YOUR_APIKEY should be a valid APIKEY Salesloft
 
+Please take a look on localhost:4201 => Frontend, localhost:8888/api/v2/ => Backend
+
 If you have any questions or concerns, do not hesitate to contact me:
 <rogerortiz4@gmail.com>
 
